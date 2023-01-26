@@ -4,6 +4,7 @@ pipeline {
   } 
 environment{
 dockerhub=credentials('dockerhub')
+PATH=$WORKSPACE/build-dir:$PATH
 }
    tools
     {
@@ -29,6 +30,13 @@ dockerhub=credentials('dockerhub')
         echo 'Build Image Completed'                
       }           
     }
+
+steps {
+  withEnv(["PATH+BUILD_DIR=${WORKSPACE}/build-dir"]) {
+    echo "PATH is: $PATH"
+    sh 'echo "PATH is: $PATH"'
+  }
+}
 
     stage('Login to Docker Hub') {         
       steps{  
