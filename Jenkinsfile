@@ -25,7 +25,7 @@ dockerhub=credentials('dockerhub')
 
  stage('Build Docker Image') {         
       steps{                
-	sh 'sudo docker build -t nbktechnosys/myjenkinsdocker:$BUILD_NUMBER .'           
+	sh 'docker build -t nbktechnosys/myjenkinsdocker:$BUILD_NUMBER .'           
         echo 'Build Image Completed'                
       }           
     }
