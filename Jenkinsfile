@@ -4,7 +4,9 @@ pipeline {
   } 
 environment{
 dockerhub=credentials('dockerhub')
-PATH=$WORKSPACE/build-dir:$PATH
+}
+environment {
+  PATH=$WORKSPACE/build-dir:$PATH
 }
    tools
     {
