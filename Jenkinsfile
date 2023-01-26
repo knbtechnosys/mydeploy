@@ -2,7 +2,9 @@ pipeline {
     agent{      
     node { label 'myjenkinsdocker'}     
   } 
-
+environment{
+dockerhub=credentials('dockerhub')
+}
    tools
     {
        maven "mymaven"
@@ -30,7 +32,7 @@ pipeline {
 
     stage('Login to Docker Hub') {         
       steps{  
-	docker login -u="$nbktechnosys" -p="$skynetnitin@012345"         
+	sh 'echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin'      
 	echo 'Login Completed'                
       }           
     }               
