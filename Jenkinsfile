@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent{      
+    node { label 'slavefordocker'}     
+  }  
+  environment {     
+    dockerhubcred= credentials('dockerhubcredentials')     
+  }    
  
    tools
     {
@@ -9,7 +14,7 @@ pipeline {
       stage('checkout') {
            steps {
              
-                git branch: 'master', url: 'https://github.com/devops4solutions/CI-CD-using-Docker.git'
+                git branch: 'main', url: 'https://github.com/knbtechnosys/mydeploy.git'
              
           }
         }
@@ -19,39 +24,40 @@ pipeline {
                 sh 'mvn package'             
           }
         }
- stage('Docker Build and Tag') {
-           steps {
-              
-                sh 'docker build -t samplewebapp:latest .' 
-                sh 'docker tag samplewebapp nikhilnidhi/samplewebapp:latest'
-                //sh 'docker tag samplewebapp nikhilnidhi/samplewebapp:$BUILD_NUMBER'
-               
-          }
-        }
-     
-  stage('Publish image to Docker Hub') {
-          
-            steps {
-        withDockerRegistry([ credentialsId: "dockerHub", url: "" ]) {
-          sh  'docker push nikhilnidhi/samplewebapp:latest'
-        //  sh  'docker push nikhilnidhi/samplewebapp:$BUILD_NUMBER' 
-        }
-                  
-          }
-        }
+
+ stage('Build Docker Image') {         
+      steps{                
+	sh 'sudo docker build -t nbktechnosys/myjenkinsdocker:$BUILD_NUMBER .'           
+        echo 'Build Image Completed'                
+      }           
+    }
+
+    stage('Login to Docker Hub') {         
+      steps{                            
+	sh 'echo $dockerhubcred | sudo docker login -u $dockerhubcred --password-stdin'                 
+	echo 'Login Completed'                
+      }           
+    }               
+    stage('Push Image to Docker Hub') {         
+      steps{                            
+	sh 'sudo docker push nbktechnosys/myjenkinsdocker:$BUILD_NUMBER'                
+	 echo 'Push Image Completed'       
+      }           
+    }      
+  
      
       stage('Run Docker container on Jenkins Agent') {
              
             steps 
    {
-                sh "docker run -d -p 8003:8080 nikhilnidhi/samplewebapp"
+                sh "docker run -d -p 8003:8080 nbktechnosys/myjenkinsdocker:$BUILD_NUMBER"
  
             }
         }
  stage('Run Docker container on remote hosts') {
              
             steps {
-                sh "docker -H ssh://jenkins@172.31.28.25 run -d -p 8003:8080 nikhilnidhi/samplewebapp"
+                sh "docker -H ssh://jenkins@172.31.46.251 run -d -p 8003:8080 nbktechnosys/myjenkinsdocker:$BUILD_NUMBER"
  
             }
         }
