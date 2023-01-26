@@ -21,25 +21,6 @@ pipeline {
           }
         }
 
-stage('Building our image') { 
-            steps { 
-                script { 
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER" 
-                }
-            } 
-        }
-        stage('Deploy our image') { 
-            steps { 
-                script { 
-                    docker.withRegistry( '', registryCredential ) { 
-                        dockerImage.push() 
-                    }
-                } 
-            }
-        } 
-
-
-
  stage('Build Docker Image') {         
       steps{                
 	sh 'sudo docker build -t nbktechnosys/myjenkinsdocker:$BUILD_NUMBER .'           
@@ -49,8 +30,7 @@ stage('Building our image') {
 
     stage('Login to Docker Hub') {         
       steps{  
-	withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'skynetnitin@012345', usernameVariable: 'nbktechnosys')])                          
-	sh "docker login -u ${env.nbktechnosys} -p ${env.skynetnitin@012345}"                
+	docker login -u="$nbktechnosys" -p="$skynetnitin@012345"         
 	echo 'Login Completed'                
       }           
     }               
