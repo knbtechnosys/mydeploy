@@ -1,6 +1,6 @@
 pipeline {
     agent{      
-    node { label 'slavefordocker'}     
+    node { label 'myjenkinsdocker'}     
   }  
   environment {     
     dockerhubcred= credentials('dockerhubcredentials')     
